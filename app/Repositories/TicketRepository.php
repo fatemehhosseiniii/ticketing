@@ -2,10 +2,15 @@
 
 namespace App\Repositories;
 
+use App\Enums\TicketStatus;
+use App\Enums\UserRole;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Repositories\GlobalRepository;
 use App\Services\FileUploadService;
 use http\Env\Response;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -18,6 +23,44 @@ class TicketRepository
         $this->fileUploadService = new FileUploadService();
     }
 
+    /**
+     * Load Tickets List
+     * @param User $user
+     * @return LengthAwarePaginator
+     */
+    public function getList(User $user): LengthAwarePaginator
+    {
+        $query = Ticket::query();
+
+        if ($user->role === UserRole::User)
+            $query->where('creator_id', $user->id);
+        elseif ($user->role === UserRole::LevelOne)
+            $query->where(function (Builder $queryBuilder) use ($user) {
+                $queryBuilder->whereIn('status', [TicketStatus::New, TicketStatus::Accepted])
+                    ->orWhere(function (Builder $queryOr) use ($user) {
+                        $queryOr->where('status', TicketStatus::Rejected)->where('expert_id', $user->id);
+                    });
+            });
+        elseif ($user->role === UserRole::LevelTwo)
+            $query->where(function (Builder $queryBuilder) use ($user) {
+                $queryBuilder->whereIn('status', [TicketStatus::Accepted, TicketStatus::Approved])
+                    ->orWhere(function (Builder $queryOr) use ($user) {
+                        $queryOr->where('status', TicketStatus::Rejected)->where('expert_id', $user->id);
+                    });
+            });
+
+
+        return $query->latest()->paginate(config('settings.paginate'));
+    }
+
+
+    /**
+     * Save New Ticket
+     * @param $user
+     * @param $data
+     * @return mixed
+     * @throws \Throwable
+     */
     public function store($user, $data): mixed
     {
         return DB::transaction(function () use ($user, $data) {
@@ -33,6 +76,11 @@ class TicketRepository
 
     }
 
+    /**
+     * Remove Ticket
+     * @param $ticket
+     * @return void
+     */
     public function destroy($ticket): void
     {
         if (!empty($ticket->file_src))

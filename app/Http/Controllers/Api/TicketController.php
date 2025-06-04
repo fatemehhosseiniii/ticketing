@@ -24,11 +24,10 @@ class TicketController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Ticket::class);
         $user = auth()->user();
         //load tickets
-        $tickets = Ticket::where('creator_id', $user->id)
-            ->latest()
-            ->paginate(config('settings.paginate'));
+        $tickets= $this->ticketRepository->getList($user);
 
         //make Response and Return result
         return Response::success([
@@ -42,11 +41,10 @@ class TicketController extends Controller
      * @param $ticketCode
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($ticketCode)
-    {
-        //find Ticket
-        $user = auth()->user();
-        $ticket = $user->tickets()->where('code', $ticketCode)->sole();
+    public function show($ticketCode){
+        //Find Ticket and check policy
+        $ticket=Ticket::where('code', $ticketCode)->sole();
+        $this->authorize('view', $ticket);
 
         //make Response and Return result
         return Response::success(['ticket' => $ticket->toResource()->additional(['showContent' => true])]);
@@ -79,11 +77,9 @@ class TicketController extends Controller
      */
     public function destroy($ticketCode)
     {
-        //find Ticket
-        $user = auth()->user();
-        $ticket=$user->tickets()
-            ->where('status', TicketStatus::New)
-            ->where('code', $ticketCode)->sole();
+        //Find Ticket and check policy
+        $ticket=Ticket::where('code', $ticketCode)->sole();
+        $this->authorize('delete', $ticket);
 
         $this->ticketRepository->destroy($ticket);
 
