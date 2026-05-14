@@ -1,6 +1,7 @@
 <script setup>
 import {ref, onMounted} from 'vue'
 import {useRouter} from "vue-router";
+import {myFetch} from "../action.js";
 
 const tickets = ref([])
 const paginate = ref([])
@@ -20,29 +21,18 @@ const errors = ref({})
 const loading = ref(false)
 
 /** Get Tickets From API **/
-async function fetchTickets(page = 1) {
+const fetchTickets = async (page = 1) => {
 
     loading.value = true
 
     const query = new URLSearchParams({
         page: page
     })
-    const response = await fetch(`/api/dashboard/tickets?${query.toString()}`, {
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    })
 
-    if (response.status == 401) {
-        localStorage.removeItem('token')
-        router.push('/')
+    const data = await myFetch(`/api/dashboard/tickets?${query.toString()}`, true)
 
-        return
-    }
-    const data = await response.json()
     loading.value = false
-    if (data && data.status == 'success' && data.data) {
+    if (data && data.status === 'success' && data.data) {
         if (data.data.tickets.length) {
             tickets.value = data.data.tickets
             paginate.value = data.data.links
@@ -52,28 +42,15 @@ async function fetchTickets(page = 1) {
     }
 }
 
-async function viewTicket(id) {
+const viewTicket = async (id) => {
 
-    const response = await fetch('/api/dashboard/tickets/' + id, {
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    })
-
-    if (response.status == 401) {
-        localStorage.removeItem('token')
-        router.push('/')
-        return
-    }
-    const data = await response.json()
-    if (data && data.status == 'success' && data.data && data.data.ticket)
+    const data = await myFetch('/api/dashboard/tickets/' + id, true)
+    if (data && data.status === 'success' && data.data && data.data.ticket)
         openModal(data.data.ticket)
-
 }
 
 /** Save new Ticket **/
-async function createTicket() {
+const createTicket = async () => {
 
     //local validation
     errors.value = {}
@@ -90,7 +67,6 @@ async function createTicket() {
 
     //make form Data
     const formData = new FormData()
-
     formData.append('subject', form.value.subject)
     formData.append('description', form.value.description)
     if (form.value.file_src) {
@@ -99,30 +75,20 @@ async function createTicket() {
 
 
     //send Data to API
-    const response = await fetch('/api/dashboard/tickets', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: formData
-    })
+    const data = await myFetch('/api/dashboard/tickets', true, 'POST', formData)
 
-    const data = await response.json()
-    if (!response.ok || !data.data) {
-        console.log('Error:', data)
-
+    if (!data.data && data.errors) {
         if (data.errors && typeof data.errors === 'object') {
             Object.entries(data.errors).forEach(([field, messages]) => {
                 errors.value = data.errors
             })
         }
-
-        return
+        return false
     }
-
-    if (data.status == 'success' && data.data.ticket)
+    if (data && data.status === 'success' && data.data.ticket) {
         tickets.value.unshift(data.data.ticket)
+        paginate.value.total = (paginate.value.total ?? 0) + 1
+    }
 
 
     form.value.subject = ''
@@ -133,39 +99,23 @@ async function createTicket() {
 }
 
 /** Remove ticket **/
-async function deleteTicket(id) {
-    const response = await fetch('/api/dashboard/tickets/' + id, {
-        method: 'DELETE',
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-
-    })
-
-    if (response.status == 401) {
-        localStorage.removeItem('token')
-        router.push('/')
-        return
-    }
-    const data = await response.json()
-    if (data && data.status == 'success') {
+const deleteTicket = async (id) => {
+    const data = await myFetch('/api/dashboard/tickets/' + id, true, 'DELETE')
+    if (data && data.status === 'success') {
         tickets.value = tickets.value.filter(t => t.code !== id)
-        paginate.total = paginate.total - 1
+        paginate.value.total = paginate.value.total - 1
     }
-
-
 }
 
 
 /** table Actions**/
-function nextPage() {
+const nextPage = () => {
     if (paginate.value.current_page < paginate.value.last_page) {
         fetchTickets(paginate.value.current_page + 1)
     }
 }
 
-function prevPage() {
+const prevPage = () => {
     if (paginate.value.current_page > 1) {
         fetchTickets(paginate.value.current_page - 1)
     }
@@ -173,22 +123,25 @@ function prevPage() {
 
 
 /** Modal Functions**/
-function openModal(ticket) {
+const openModal = (ticket) => {
     selectedTicket.value = ticket
     showModal.value = true
 }
 
-function closeModal() {
+const closeModal = () => {
     showModal.value = false
     showCreateModal.value = false
     selectedTicket.value = null
-    ticket_detail.value = []
 }
 
-function openCreateModal() {
+const openCreateModal = () => {
     showCreateModal.value = true
 }
 
+const logout = () => {
+    localStorage.removeItem('token')
+    router.push('/')
+}
 
 onMounted(() => {
     fetchTickets()
@@ -201,6 +154,7 @@ onMounted(() => {
 
         <div class="text-right">
             <button @click="openCreateModal()">Create new Ticket</button>
+            <button @click="logout()" class="close-button">Log out</button>
         </div>
         <div v-if="loading" class="loading">
             Loading...
@@ -298,10 +252,10 @@ onMounted(() => {
                     </small>
                 </p>
                 <p v-if="selectedTicket.file_src">
-                    <a href="{{selectedTicket.file_src}}" target="_blank">Download file</a>
+                    <a :href="selectedTicket?.file_src" target="_blank">Download file</a>
                 </p>
 
-                <div v-if="selectedTicket.status.key == 'rejected'">
+                <div v-if="selectedTicket.status.key === 'rejected'">
                     <hr/>
                     <p class="reject">
                         <b>rejected note:</b> {{ selectedTicket?.status_message }}

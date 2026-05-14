@@ -7,11 +7,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\TicketRequest;
 use App\Http\Resources\PaginateResource;
 use App\Models\Ticket;
+use App\Repositories\TicketRepository;
 use App\Services\Response;
-use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
+
+    public function __construct(private readonly TicketRepository $ticketRepository)
+    {
+    }
+
     /**
      * Make tickets list
      * @return \Illuminate\Http\JsonResponse
@@ -19,11 +24,10 @@ class TicketController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Ticket::class);
         $user = auth()->user();
         //load tickets
-        $tickets = Ticket::where('creator_id', $user->id)
-            ->latest()
-            ->paginate(config('settings.paginate'));
+        $tickets= $this->ticketRepository->getList($user);
 
         //make Response and Return result
         return Response::success([
@@ -32,11 +36,15 @@ class TicketController extends Controller
         ]);
     }
 
-    public function show($ticketCode)
-    {
-        //find Ticket
-        $user = auth()->user();
-        $ticket = $user->tickets()->where('code', $ticketCode)->sole();
+    /**
+     * View Ticket Detail
+     * @param $ticketCode
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($ticketCode){
+        //Find Ticket and check policy
+        $ticket=Ticket::where('code', $ticketCode)->sole();
+        $this->authorize('view', $ticket);
 
         //make Response and Return result
         return Response::success(['ticket' => $ticket->toResource()->additional(['showContent' => true])]);
@@ -52,7 +60,8 @@ class TicketController extends Controller
         //Create new
         $user = auth()->user();
 
-        $ticket = $user->tickets()->create($request->validated());
+        $ticket = $this->ticketRepository->store($user, $request->validated());
+
         $ticket->refresh();
 
         //make Response and Return result
@@ -61,13 +70,18 @@ class TicketController extends Controller
     }
 
 
+    /**
+     * Remove New ticket
+     * @param $ticketCode
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($ticketCode)
     {
-        //find Ticket
-        $user = auth()->user();
-        $user->tickets()
-            ->where('status', TicketStatus::New)
-            ->where('code', $ticketCode)->delete();
+        //Find Ticket and check policy
+        $ticket=Ticket::where('code', $ticketCode)->sole();
+        $this->authorize('delete', $ticket);
+
+        $this->ticketRepository->destroy($ticket);
 
         return Response::success();
     }

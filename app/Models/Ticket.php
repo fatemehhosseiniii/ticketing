@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Enums\TicketStatus;
+use App\Policies\TicketPolicy;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable(['code','subject','description','file_src','status','status_message','creator_id','expert_id','checked_at'])]
 #[Hidden(['creator_id', 'expert_id'])]
+#[UsePolicy(TicketPolicy::class)]
 class Ticket extends Model
 {
     protected function casts(): array
