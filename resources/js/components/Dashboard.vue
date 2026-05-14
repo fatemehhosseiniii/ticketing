@@ -17,8 +17,15 @@ const showModal = ref(false)
 const showCreateModal = ref(false)
 const selectedTicket = ref(null)
 
+const showRejectModal = ref(false)
+const rejectSelectedTicket = ref(null)
+const reject_description = ref('')
+
 const errors = ref({})
 const loading = ref(false)
+
+const user = JSON.parse(localStorage.getItem('user'))
+
 
 /** Get Tickets From API **/
 const fetchTickets = async (page = 1) => {
@@ -108,13 +115,38 @@ const deleteTicket = async (id) => {
 }
 
 
+/** Ticket State **/
+const rejected = async (id) => {
+    const data = await myFetch('/api/dashboard/tickets/' + id+'/rejected', true, 'PATCH', JSON.stringify({status_message:reject_description.value}),true)
+
+    if (!data.data && data.errors) {
+        if (data.errors && typeof data.errors === 'object') {
+            Object.entries(data.errors).forEach(([field, messages]) => {
+                errors.value = data.errors
+            })
+        }
+        return false
+    }
+    if (data && data.status === 'success') {
+        fetchTickets(paginate.value.current_page)
+        closeModal()
+    }
+}
+const accepted = async (id) => {
+    const data = await myFetch('/api/dashboard/tickets/' + id+'/accepted', true, 'PATCH')
+
+    if (data && data.status === 'success') {
+        fetchTickets(paginate.value.current_page)
+        closeModal()
+    }
+}
+
 /** table Actions**/
 const nextPage = () => {
     if (paginate.value.current_page < paginate.value.last_page) {
         fetchTickets(paginate.value.current_page + 1)
     }
 }
-
 const prevPage = () => {
     if (paginate.value.current_page > 1) {
         fetchTickets(paginate.value.current_page - 1)
@@ -127,16 +159,24 @@ const openModal = (ticket) => {
     selectedTicket.value = ticket
     showModal.value = true
 }
-
 const closeModal = () => {
     showModal.value = false
-    showCreateModal.value = false
     selectedTicket.value = null
+
+    showCreateModal.value = false
+
+    showRejectModal.value = false
+    rejectSelectedTicket.value = null
 }
 
 const openCreateModal = () => {
     showCreateModal.value = true
 }
+const rejectTicketModal = async (id) => {
+    showRejectModal.value = true
+    rejectSelectedTicket.value = id
+}
+
 
 const logout = () => {
     localStorage.removeItem('token')
@@ -145,6 +185,7 @@ const logout = () => {
 
 onMounted(() => {
     fetchTickets()
+
 })
 </script>
 
@@ -152,8 +193,12 @@ onMounted(() => {
     <div class="container">
         <h2 class="title">Tickets</h2>
 
+        <div class="text-left ">
+            <p><small>User Login:</small> {{ user?.name }}</p>
+            <p><small>Role:</small> {{ user?.role.label }}</p>
+        </div>
         <div class="text-right">
-            <button @click="openCreateModal()">Create new Ticket</button>
+            <button @click="openCreateModal()" v-if="user.role.key === 'user'">Create new Ticket</button>
             <button @click="logout()" class="close-button">Log out</button>
         </div>
         <div v-if="loading" class="loading">
@@ -188,10 +233,22 @@ onMounted(() => {
                         </button>
 
                         <button
-                            v-if="ticket.status.key === 'new'"
+                            v-if="ticket.status.key === 'new' && user.role.key === 'user'"
                             class="icon-btn delete"
                             @click="deleteTicket(ticket.code)">
                             🗑
+                        </button>
+
+                        <button v-if="(ticket.status.key === 'new' && user.role.key === 'level_one') || (ticket.status.key === 'accepted' && user.role.key === 'level_two')"
+                                @click="accepted(ticket.code)"
+                                class="icon-btn success">
+                            ✔
+                        </button>
+                        <button
+                            v-if="(ticket.status.key === 'new' && user.role.key === 'level_one') || (ticket.status.key === 'accepted' && user.role.key === 'level_two')"
+                            @click="rejectTicketModal(ticket.code)"
+                            class="icon-btn delete">
+                            ✖
                         </button>
                     </td>
                 </tr>
@@ -286,6 +343,23 @@ onMounted(() => {
                 <div class="w-100 text-right">
                     <button @click="closeModal" class="close-button">Cancel</button>
                     <button @click="createTicket" class="create-button">Create</button>
+                </div>
+
+            </div>
+        </div>
+        <div v-if="showRejectModal" class="modal-overlay" @click="closeModal">
+            <div class="modal" @click.stop>
+
+                <h3>Mention the reason for the ticket rejection:</h3>
+
+                <textarea v-model="reject_description" placeholder="Reason" @input="errors.status_message = null"
+                          class="w-100"></textarea>
+                <small v-if="errors.status_message" class="error-text">{{ errors.status_message[0] }}</small>
+
+
+                <div class="w-100 text-right">
+                    <button @click="closeModal" class="close-button">Cancel</button>
+                    <button @click="rejected(rejectSelectedTicket)" class="create-button">Reject</button>
                 </div>
 
             </div>

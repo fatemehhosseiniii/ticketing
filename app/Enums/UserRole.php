@@ -28,7 +28,6 @@ enum UserRole: int
     public function toArray(): array
     {
         return [
-            'type'       => $this->value,
             'key'        => $this->key(),
             'label'        => $this->label()
         ];

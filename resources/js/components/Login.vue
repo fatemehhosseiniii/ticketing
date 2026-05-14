@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import {ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {showToast} from "../toast.js";
 
 const router = useRouter()
 
@@ -24,7 +25,7 @@ async function login() {
     })
     const data = await res.json()
 
-    if (!res.ok || !data.data) {
+    if (res.status === 422 && data.errors) {
         console.log('Error:', data)
 
         if (data.errors && typeof data.errors === 'object') {
@@ -32,13 +33,20 @@ async function login() {
                 errors.value = data.errors
             })
         }
-
-
+        return
+    }
+    if(res.status !== 200) {
+        showToast(data.message ?? 'Server Error', 'error')
         return
     }
 
-    localStorage.setItem('token', data.data.token)
-    router.push('/dashboard')
+
+    if (data && data.data) {
+        localStorage.setItem('token', data.data.token)
+        localStorage.setItem('user', JSON.stringify(data.data?.user))
+        router.push('/dashboard')
+    } else
+        showToast('Server Error', 'error')
 
 }
 </script>
@@ -55,7 +63,7 @@ async function login() {
         <button @click="login">Login</button>
 
         <p @click="$router.push('/register')" class="link">
-           don't Have Account?
+            don't Have Account?
         </p>
     </div>
 

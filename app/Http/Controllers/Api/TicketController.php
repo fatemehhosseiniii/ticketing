@@ -9,6 +9,7 @@ use App\Http\Resources\PaginateResource;
 use App\Models\Ticket;
 use App\Repositories\TicketRepository;
 use App\Services\Response;
+use Illuminate\Http\JsonResponse;
 
 class TicketController extends Controller
 {
@@ -38,12 +39,11 @@ class TicketController extends Controller
 
     /**
      * View Ticket Detail
-     * @param $ticketCode
-     * @return \Illuminate\Http\JsonResponse
+     * @param Ticket $ticket
+     * @return JsonResponse
      */
-    public function show($ticketCode){
+    public function show(Ticket $ticket){
         //Find Ticket and check policy
-        $ticket=Ticket::where('code', $ticketCode)->sole();
         $this->authorize('view', $ticket);
 
         //make Response and Return result
@@ -72,13 +72,12 @@ class TicketController extends Controller
 
     /**
      * Remove New ticket
-     * @param $ticketCode
-     * @return \Illuminate\Http\JsonResponse
+     * @param Ticket $ticket
+     * @return JsonResponse
      */
-    public function destroy($ticketCode)
+    public function destroy(Ticket $ticket)
     {
         //Find Ticket and check policy
-        $ticket=Ticket::where('code', $ticketCode)->sole();
         $this->authorize('delete', $ticket);
 
         $this->ticketRepository->destroy($ticket);

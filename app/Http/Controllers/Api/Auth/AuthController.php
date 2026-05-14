@@ -13,19 +13,20 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request)
     {
-        $data=$request->validated();
+        $data = $request->validated();
         //find User
         $user = User::where('email', $data['email'])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            return Response::error(__('auth.failed'),401);
+            return Response::error(__('auth.failed'), 401);
         }
 
         //make token
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return Response::success([
-            'token'=>$token,
+            'token' => $token,
+            'user' => $user->toResource()
         ]);
     }
 }

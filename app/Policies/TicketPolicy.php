@@ -32,8 +32,8 @@ class TicketPolicy
             if ($user->role === UserRole::LevelOne &&
                 (in_array($ticket->status, [TicketStatus::New, TicketStatus::Accepted]) || ($ticket->status === TicketStatus::Rejected && $ticket->expert_id === $user->id)))
                 return true;
-            elseif ($user->role === UserRole::LevelOne &&
-                (in_array($ticket->status, [TicketStatus::Accepted, TicketStatus::Approved]) || ($ticket->status === TicketStatus::Rejected && $ticket->expert_id === $user->id)))
+            elseif ($user->role === UserRole::LevelTwo &&
+                (in_array($ticket->status, [TicketStatus::Accepted, TicketStatus::Send]) || ($ticket->status === TicketStatus::Rejected && $ticket->expert_id === $user->id)))
                 return true;
         }
 
@@ -55,7 +55,7 @@ class TicketPolicy
     {
         if ($user->role === UserRole::LevelOne && $ticket->status === TicketStatus::New)
             return true;
-        elseif ($user->role === UserRole::LevelOne && $ticket->status === TicketStatus::Accepted)
+        elseif ($user->role === UserRole::LevelTwo && $ticket->status === TicketStatus::Accepted)
             return true;
 
         return false;

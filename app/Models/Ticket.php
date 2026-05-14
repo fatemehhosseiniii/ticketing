@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\TicketStatus;
 use App\Policies\TicketPolicy;
+use App\Services\Tickets\TicketState;
+use App\Services\Tickets\TicketStateFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
@@ -14,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 #[UsePolicy(TicketPolicy::class)]
 class Ticket extends Model
 {
+
     protected function casts(): array
     {
         return [
@@ -22,7 +25,15 @@ class Ticket extends Model
         ];
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'code';
+    }
 
+    public function state(): TicketState
+    {
+        return TicketStateFactory::make($this);
+    }
 
     protected static function boot(): void
     {
