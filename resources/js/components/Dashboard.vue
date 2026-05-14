@@ -182,7 +182,6 @@ function closeModal() {
     showModal.value = false
     showCreateModal.value = false
     selectedTicket.value = null
-    ticket_detail.value = []
 }
 
 function openCreateModal() {
@@ -298,10 +297,10 @@ onMounted(() => {
                     </small>
                 </p>
                 <p v-if="selectedTicket.file_src">
-                    <a href="{{selectedTicket.file_src}}" target="_blank">Download file</a>
+                    <a :href="selectedTicket?.file_src" target="_blank">Download file</a>
                 </p>
 
-                <div v-if="selectedTicket.status.key == 'rejected'">
+                <div v-if="selectedTicket.status.key === 'rejected'">
                     <hr/>
                     <p class="reject">
                         <b>rejected note:</b> {{ selectedTicket?.status_message }}

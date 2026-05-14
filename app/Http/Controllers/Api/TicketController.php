@@ -7,11 +7,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\TicketRequest;
 use App\Http\Resources\PaginateResource;
 use App\Models\Ticket;
+use App\Repositories\TicketRepository;
 use App\Services\Response;
-use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
+
+    public function __construct(private readonly TicketRepository $ticketRepository)
+    {
+    }
+
     /**
      * Make tickets list
      * @return \Illuminate\Http\JsonResponse
@@ -32,6 +37,11 @@ class TicketController extends Controller
         ]);
     }
 
+    /**
+     * View Ticket Detail
+     * @param $ticketCode
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($ticketCode)
     {
         //find Ticket
@@ -52,7 +62,8 @@ class TicketController extends Controller
         //Create new
         $user = auth()->user();
 
-        $ticket = $user->tickets()->create($request->validated());
+        $ticket = $this->ticketRepository->store($user, $request->validated());
+
         $ticket->refresh();
 
         //make Response and Return result
@@ -61,13 +72,20 @@ class TicketController extends Controller
     }
 
 
+    /**
+     * Remove New ticket
+     * @param $ticketCode
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($ticketCode)
     {
         //find Ticket
         $user = auth()->user();
-        $user->tickets()
+        $ticket=$user->tickets()
             ->where('status', TicketStatus::New)
-            ->where('code', $ticketCode)->delete();
+            ->where('code', $ticketCode)->sole();
+
+        $this->ticketRepository->destroy($ticket);
 
         return Response::success();
     }
