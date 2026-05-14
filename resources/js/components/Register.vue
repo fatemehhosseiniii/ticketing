@@ -36,8 +36,18 @@ async function register() {
         return
     }
 
-    localStorage.setItem('token', data.data.token)
-    router.push('/dashboard')
+    if(res.status !== 200) {
+        showToast(data.message ?? 'Server Error', 'error')
+        return
+    }
+
+
+    if (data && data.data) {
+        localStorage.setItem('token', data.data.token)
+        localStorage.setItem('user', JSON.stringify(data.data?.user))
+        router.push('/dashboard')
+    } else
+        showToast('Server Error', 'error')
 
 }
 </script>

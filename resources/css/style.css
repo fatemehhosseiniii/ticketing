@@ -105,12 +105,19 @@ th {
 .icon-btn.delete {
     background: #fecaca;
 }
+.icon-btn.success {
+    background: #aeffae;
+}
 .icon-btn.view {
     background: #aae0f8;
 }
 
 .icon-btn.delete:hover {
     background: #ef4444;
+    color: white;
+}
+.icon-btn.success:hover {
+    background: #407b3b;
     color: white;
 }
 .icon-btn.view:hover {
@@ -183,8 +190,15 @@ th {
 .w-50{
     width: 50%;
 }
+
+.d-flex{
+    display: flex;
+}
 .text-right{
     text-align: right;
+}
+.text-left{
+    text-align: left;
 }
 .create-button{
     margin-top: 10px;

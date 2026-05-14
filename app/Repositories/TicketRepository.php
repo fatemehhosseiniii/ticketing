@@ -43,7 +43,7 @@ class TicketRepository
             });
         elseif ($user->role === UserRole::LevelTwo)
             $query->where(function (Builder $queryBuilder) use ($user) {
-                $queryBuilder->whereIn('status', [TicketStatus::Accepted, TicketStatus::Approved])
+                $queryBuilder->whereIn('status', [TicketStatus::Accepted, TicketStatus::Send])
                     ->orWhere(function (Builder $queryOr) use ($user) {
                         $queryOr->where('status', TicketStatus::Rejected)->where('expert_id', $user->id);
                     });

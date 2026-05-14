@@ -6,16 +6,18 @@ enum TicketStatus: int
 {
     case New = 0;
     case Accepted = 1;
-    case Approved = 2;
+    case Send = 2;
     case Rejected = 3;
+    case Completed=4;
 
     public function key(): string
     {
         return match ($this) {
             self::New     => 'new',
             self::Accepted       => 'accepted',
-            self::Approved       => 'approved',
+            self::Send       => 'send',
             self::Rejected       => 'rejected',
+            self::Completed       => 'completed',
         };
     }
     public function label(): string
@@ -23,8 +25,9 @@ enum TicketStatus: int
         return match ($this) {
             self::New     => 'New',
             self::Accepted     => 'Accepted',
-            self::Approved     => 'Approved',
-            self::Rejected     => 'Rejected'
+            self::Send     => 'Send',
+            self::Rejected     => 'Rejected',
+            self::Completed     => 'Completed'
         };
     }
     public function class(): string
@@ -32,8 +35,9 @@ enum TicketStatus: int
         return match ($this) {
             self::New     => 'new',
             self::Accepted     => 'accepted',
-            self::Approved     => 'approved',
-            self::Rejected     => 'rejected'
+            self::Send     => 'send',
+            self::Rejected     => 'rejected',
+            self::Completed     => 'approved'
         };
     }
 

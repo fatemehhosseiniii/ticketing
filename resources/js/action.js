@@ -1,10 +1,12 @@
 import router from "./router";
 import {showToast} from "./toast";
 
-export const myFetch = async (url, useToken, method = 'GET', body = false) => {
+export const myFetch = async (url, useToken, method = 'GET', body = false,setContent=false) => {
     const headers = {'Accept': 'application/json'}
     if (useToken)
         headers.Authorization = `Bearer ${localStorage.getItem('token')}`
+    if (setContent)
+        headers['Content-Type'] = 'application/json';
     //set options for request
     const options = {
         method,

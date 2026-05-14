@@ -19,6 +19,7 @@ class RegisterController extends Controller
 
         return Response::success([
             'token'=>$token,
+            'user' => $user->toResource()
         ]);
     }
 }

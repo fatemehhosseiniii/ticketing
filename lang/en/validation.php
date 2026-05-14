@@ -195,6 +195,8 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'status_message'=>'Reason'
+    ],
 
 ];
