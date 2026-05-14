@@ -53,6 +53,7 @@ class TicketController extends Controller
         $user = auth()->user();
 
         $ticket = $user->tickets()->create($request->validated());
+        $ticket->refresh();
 
         //make Response and Return result
         return Response::success(['ticket' => $ticket->toResource()]);

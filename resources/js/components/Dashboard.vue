@@ -121,7 +121,9 @@ async function createTicket() {
         return
     }
 
-    tickets.value.unshift(data.ticket)
+    if (data.status == 'success' && data.data.ticket)
+        tickets.value.unshift(data.data.ticket)
+
 
     form.value.subject = ''
     form.value.description = ''
@@ -149,7 +151,7 @@ async function deleteTicket(id) {
     const data = await response.json()
     if (data && data.status == 'success') {
         tickets.value = tickets.value.filter(t => t.code !== id)
-        paginate.total= paginate.total-1
+        paginate.total = paginate.total - 1
     }
 
 
@@ -175,12 +177,14 @@ function openModal(ticket) {
     selectedTicket.value = ticket
     showModal.value = true
 }
+
 function closeModal() {
     showModal.value = false
     showCreateModal.value = false
     selectedTicket.value = null
     ticket_detail.value = []
 }
+
 function openCreateModal() {
     showCreateModal.value = true
 }
@@ -214,7 +218,7 @@ onMounted(() => {
                 </thead>
 
                 <tbody>
-                <tr v-if="tickets.length" v-for="ticket in tickets" :key="ticket.id">
+                <tr v-if="tickets.length" v-for="ticket in tickets" :key="ticket.code">
                     <td>{{ ticket.code }}</td>
                     <td>{{ ticket.subject }}</td>
                     <td>
@@ -238,7 +242,7 @@ onMounted(() => {
                     </td>
                 </tr>
                 <tr v-else>
-                    <td colspan="5"> No Data Exists! </td>
+                    <td colspan="5"> No Data Exists!</td>
                 </tr>
                 </tbody>
             </table>
@@ -281,7 +285,7 @@ onMounted(() => {
         <div v-if="showModal" class="modal-overlay" @click="closeModal">
             <div class="modal" @click.stop>
 
-                <h3>Ticket #{{selectedTicket.code}}</h3>
+                <h3>Ticket #{{ selectedTicket.code }}</h3>
 
                 <p><b>Subject: </b> {{ selectedTicket?.subject }}</p>
                 <p><b>Description: </b> {{ selectedTicket?.description }}</p>

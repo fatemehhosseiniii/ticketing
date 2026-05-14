@@ -20,7 +20,7 @@ class TicketResource extends JsonResource
             'subject' => $ticket->subject,
             'created_at' => $ticket->created_at->format('Y-m-d H:i'),
 
-            'status' => $ticket->status->toArray(),
+            'status' => $ticket->status?->toArray() ?? '',
             'status_message' => $this->when(!empty($this->additional['showContent']), $ticket->status_message),
             'checked_at' => $this->when(!empty($this->additional['showContent']),
             fn()=> !empty($ticket->checked_at) ? $ticket->checked_at->format('Y-m-d H:i') : null),
