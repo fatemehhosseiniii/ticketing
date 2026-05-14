@@ -8,7 +8,7 @@ const email = ref('')
 const password = ref('')
 const errors = ref({})
 
-async function register() {
+async function login() {
     errors.value = {}
 
     const res = await fetch('/api/auth/login', {
@@ -24,7 +24,7 @@ async function register() {
     })
     const data = await res.json()
 
-    if (!res.ok) {
+    if (!res.ok || !data.data) {
         console.log('Error:', data)
 
         if (data.errors && typeof data.errors === 'object') {
@@ -37,7 +37,7 @@ async function register() {
         return
     }
 
-    localStorage.setItem('token', data.token)
+    localStorage.setItem('token', data.data.token)
     router.push('/dashboard')
 
 }
@@ -52,7 +52,7 @@ async function register() {
         <input v-model="password" type="password" placeholder="Password" @input="errors.password = null"/>
         <small v-if="errors.password" class="error-text">{{ errors.password[0] }}</small>
 
-        <button @click="register">Login</button>
+        <button @click="login">Login</button>
 
         <p @click="$router.push('/register')" class="link">
            don't Have Account?

@@ -10,6 +10,7 @@ const password = ref('')
 const errors = ref({})
 
 async function register() {
+    errors.value = {}
     const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -23,7 +24,7 @@ async function register() {
         })
     })
     const data = await res.json()
-    if (!res.ok) {
+    if (!res.ok || !data.data) {
         console.log('Error:', data)
 
         if (data.errors && typeof data.errors === 'object') {
@@ -35,7 +36,7 @@ async function register() {
         return
     }
 
-    localStorage.setItem('token', data.token)
+    localStorage.setItem('token', data.data.token)
     router.push('/dashboard')
 
 }

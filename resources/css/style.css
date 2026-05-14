@@ -16,7 +16,7 @@ body {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-input {
+input,textarea {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -49,4 +49,184 @@ button:hover {
 .error-text{
     color: #ff0000;
     font-size: 10px;
+}
+
+
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    font-family: sans-serif;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+
+    border-right: 1px solid #eee;
+}
+
+th {
+    background: #f3f4f6;
+    /*text-align: right;*/
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.icon-btn {
+    border: none;
+    background: #e5e7eb;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.icon-btn:hover {
+    background: #d1d5db;
+}
+
+.icon-btn.delete {
+    background: #fecaca;
+}
+.icon-btn.view {
+    background: #aae0f8;
+}
+
+.icon-btn.delete:hover {
+    background: #ef4444;
+    color: white;
+}
+.icon-btn.view:hover {
+    background: #4d9df8;
+    color: white;
+}
+
+/* Status badges */
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+}
+
+.new {
+    background: #3b82f6;
+}
+
+.accepted {
+    background: #f59e0b;
+}
+
+.approved {
+    background: #8b5cf6;
+}
+
+.rejected {
+    background: #ef4444;
+}
+
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+}
+
+.reject {
+    color: #ef4444;
+    margin-top: 10px;
+}
+
+.close {
+    margin-top: 15px;
+    width: 100%;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.w-100{
+    width: 100%;
+}
+
+.w-50{
+    width: 50%;
+}
+.text-right{
+    text-align: right;
+}
+.create-button{
+    margin-top: 10px;
+    margin-left: 2px;
+    background-color: #007a0a;
+}
+.create-button:hover{
+    background-color: #00370a;
+}
+.close-button{
+    margin-top: 10px;
+    background-color: #7a1011;
+}
+.close-button:hover{
+    background-color: #4b0c0d;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+.pagination button {
+    padding: 5px;
+    border: none;
+    border-radius: 6px;
+    background: #4f46e5;
+    color: white;
+    cursor: pointer;
+}
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.total {
+    margin-top: 15px;
+    text-align: center;
+    color: #666;
+}
+.loading {
+    text-align: center;
+    padding: 30px;
 }
