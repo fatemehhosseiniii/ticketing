@@ -4,8 +4,6 @@ namespace App\Listeners;
 
 use App\Actions\SendTicketStatusNotification;
 use App\Events\TicketStatusChanged;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener]
