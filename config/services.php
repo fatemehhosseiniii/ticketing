@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'confirm_endpoint'=>[
+        'base_url' => env('CONFIRM_ENDPOINT_BASE_URL'),
+    ]
+
 ];

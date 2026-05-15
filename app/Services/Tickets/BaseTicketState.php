@@ -18,12 +18,13 @@ abstract class BaseTicketState implements TicketState
         $this->change(TicketStatus::Rejected, $reason);
     }
 
-    protected function change(TicketStatus $status, string|null $reason=null): void
+    protected function change(TicketStatus $status, string|null $reason = null): void
     {
         $this->ticket->update([
             'status' => $status,
             'expert_id' => auth()->id(),
-            'status_message' => $reason
+            'status_message' => $reason,
+            'checked_at' => now()
         ]);
     }
 }

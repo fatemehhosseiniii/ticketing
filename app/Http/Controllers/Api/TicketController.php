@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\TicketStatus;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\TicketRequest;
 use App\Http\Resources\PaginateResource;
@@ -45,6 +46,10 @@ class TicketController extends Controller
     public function show(Ticket $ticket){
         //Find Ticket and check policy
         $this->authorize('view', $ticket);
+
+        //check access
+        if(auth()->user()->role === UserRole::LevelTwo)
+            $ticket->load('logs');
 
         //make Response and Return result
         return Response::success(['ticket' => $ticket->toResource()->additional(['showContent' => true])]);

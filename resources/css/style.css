@@ -141,12 +141,15 @@ th {
     background: #f59e0b;
 }
 
-.approved {
+.send {
     background: #8b5cf6;
 }
 
 .rejected {
     background: #ef4444;
+}
+.completed {
+    background: #42b033;
 }
 
 
@@ -165,6 +168,12 @@ th {
     padding: 20px;
     border-radius: 10px;
     width: 350px;
+}
+.modal-lg {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 450px;
 }
 
 .reject {

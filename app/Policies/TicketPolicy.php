@@ -33,7 +33,7 @@ class TicketPolicy
                 (in_array($ticket->status, [TicketStatus::New, TicketStatus::Accepted]) || ($ticket->status === TicketStatus::Rejected && $ticket->expert_id === $user->id)))
                 return true;
             elseif ($user->role === UserRole::LevelTwo &&
-                (in_array($ticket->status, [TicketStatus::Accepted, TicketStatus::Send]) || ($ticket->status === TicketStatus::Rejected && $ticket->expert_id === $user->id)))
+                (in_array($ticket->status, [TicketStatus::Accepted, TicketStatus::Send, TicketStatus::Completed]) || ($ticket->status === TicketStatus::Rejected && $ticket->expert_id === $user->id)))
                 return true;
         }
 

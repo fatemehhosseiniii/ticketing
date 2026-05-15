@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\TicketApprovalController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketRejectionController;
+use App\Http\Controllers\FakeEndpointController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->middleware('guest')->group(function () {
@@ -31,3 +32,9 @@ Route::prefix('dashboard')->middleware('auth:api')->group(function () {
     });
 
 });
+
+
+
+
+//fake endpoint
+Route::post('endpoint/fake/confirm-ticket', FakeEndpointController::class);
