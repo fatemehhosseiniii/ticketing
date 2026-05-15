@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['code', 'subject', 'description', 'file_src', 'status', 'status_message', 'creator_id', 'expert_id', 'checked_at'])]
@@ -34,6 +35,11 @@ class Ticket extends Model
     public function state(): TicketState
     {
         return TicketStateFactory::make($this);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function logs(): HasMany

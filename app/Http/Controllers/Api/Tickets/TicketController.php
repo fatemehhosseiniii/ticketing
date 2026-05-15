@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Tickets;
 
-use App\Enums\TicketStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\TicketRequest;
+use App\Http\Requests\Api\Tickets\TicketRequest;
 use App\Http\Resources\PaginateResource;
 use App\Models\Ticket;
 use App\Repositories\TicketRepository;

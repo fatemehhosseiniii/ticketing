@@ -4,6 +4,7 @@ namespace App\Services\Tickets;
 
 
 use App\Enums\TicketStatus;
+use App\Events\TicketStatusChanged;
 use App\Models\Ticket;
 
 abstract class BaseTicketState implements TicketState
@@ -20,11 +21,17 @@ abstract class BaseTicketState implements TicketState
 
     protected function change(TicketStatus $status, string|null $reason = null): void
     {
+        $ticketStatus=$this->ticket->status->label();
         $this->ticket->update([
             'status' => $status,
             'expert_id' => auth()->id(),
             'status_message' => $reason,
             'checked_at' => now()
         ]);
+        event(new TicketStatusChanged(
+            $this->ticket,
+            $ticketStatus,
+            $status->label()
+        ));
     }
 }

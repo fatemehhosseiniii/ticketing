@@ -175,6 +175,12 @@ th {
     border-radius: 10px;
     width: 450px;
 }
+.modal-big {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 600px;
+}
 
 .reject {
     color: #ef4444;
@@ -224,6 +230,14 @@ th {
 }
 .close-button:hover{
     background-color: #4b0c0d;
+}
+.notic-button{
+    margin-top: 10px;
+    margin-left: 2px;
+    background-color: #e1db62;
+}
+.notic-button:hover{
+    background-color: #958f4b;
 }
 
 .pagination {

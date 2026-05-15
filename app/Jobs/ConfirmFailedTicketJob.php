@@ -25,24 +25,9 @@ class ConfirmFailedTicketJob implements ShouldQueue
      */
     public function handle(): void
     {
-        //call adapter
-        $confirmAdapter = new ExternalTicketConfirmAdapter();
-
         foreach ($this->tickets as $ticket) {
             $ticket->lockForUpdate();
-
-            $res = $confirmAdapter->confirm([
-                'id' => $ticket->id,
-                'code' => $ticket->code,
-                'subject' => $ticket->subject,
-                'description' => $ticket->description,
-            ]);
-            if ($res['successful'])
-                $ticket->update([
-                    'status' => TicketStatus::Completed,
-                    'checked_at' => now()
-                ]);
-
+            $ticket->state()->approve();
         }
     }
 }

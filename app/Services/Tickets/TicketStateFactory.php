@@ -11,7 +11,7 @@ class TicketStateFactory
     {
         return match ($ticket->status) {
             TicketStatus::New => new NewState($ticket),
-            TicketStatus::Accepted => new AcceptedState($ticket),
+            TicketStatus::Accepted, TicketStatus::Send => new AcceptedState($ticket),
             default =>
             throw new \Exception('Invalid state'),
         };
