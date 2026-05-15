@@ -10,8 +10,9 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['code','subject','description','file_src','status','status_message','creator_id','expert_id','checked_at'])]
+#[Fillable(['code', 'subject', 'description', 'file_src', 'status', 'status_message', 'creator_id', 'expert_id', 'checked_at'])]
 #[Hidden(['creator_id', 'expert_id'])]
 #[UsePolicy(TicketPolicy::class)]
 class Ticket extends Model
@@ -21,7 +22,7 @@ class Ticket extends Model
     {
         return [
             'status' => TicketStatus::class,
-            'checked_at'=>'datetime'
+            'checked_at' => 'datetime'
         ];
     }
 
@@ -33,6 +34,11 @@ class Ticket extends Model
     public function state(): TicketState
     {
         return TicketStateFactory::make($this);
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(TicketLog::class);
     }
 
     protected static function boot(): void

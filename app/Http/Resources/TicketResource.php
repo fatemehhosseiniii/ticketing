@@ -23,11 +23,16 @@ class TicketResource extends JsonResource
             'status' => $ticket->status?->toArray() ?? '',
             'status_message' => $this->when(!empty($this->additional['showContent']), $ticket->status_message),
             'checked_at' => $this->when(!empty($this->additional['showContent']),
-            fn()=> !empty($ticket->checked_at) ? $ticket->checked_at->format('Y-m-d H:i') : null),
+                fn() => !empty($ticket->checked_at) ? $ticket->checked_at->format('Y-m-d H:i') : null),
 
             'description' => $this->when(!empty($this->additional['showContent']), $ticket->description),
             'file_src' => $this->when(!empty($this->additional['showContent']),
                 fn() => !empty($ticket->file_src) ? asset($ticket->file_src) : null),
+
+            'logs' => $this->when(
+                $ticket->relationLoaded('logs') && !empty($this->additional['showContent']) && !$ticket->logs->isEmpty(),
+                fn() => $ticket->logs->sortByDesc('created_at')->toResourceCollection()
+            )
         ];
     }
 }

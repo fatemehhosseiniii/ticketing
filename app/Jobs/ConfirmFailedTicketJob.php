@@ -32,6 +32,7 @@ class ConfirmFailedTicketJob implements ShouldQueue
             $ticket->lockForUpdate();
 
             $res = $confirmAdapter->confirm([
+                'id' => $ticket->id,
                 'code' => $ticket->code,
                 'subject' => $ticket->subject,
                 'description' => $ticket->description,

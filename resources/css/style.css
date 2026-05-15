@@ -169,6 +169,12 @@ th {
     border-radius: 10px;
     width: 350px;
 }
+.modal-lg {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 450px;
+}
 
 .reject {
     color: #ef4444;

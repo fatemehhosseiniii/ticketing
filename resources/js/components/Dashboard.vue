@@ -295,7 +295,7 @@ onMounted(() => {
 
         <!-- Modal -->
         <div v-if="showModal" class="modal-overlay" @click="closeModal">
-            <div class="modal" @click.stop>
+            <div class="modal-lg" @click.stop>
 
                 <h3>Ticket #{{ selectedTicket.code }}</h3>
 
@@ -318,6 +318,30 @@ onMounted(() => {
                     <p class="reject">
                         <b>rejected note:</b> {{ selectedTicket?.status_message }}
                     </p>
+                </div>
+
+                <div v-if="selectedTicket.logs">
+                    <p><b>Log History: </b></p>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Status Code</th>
+                            <th>Message</th>
+                            <th>Created date</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr v-for="log in selectedTicket.logs">
+                            <td>
+                                <span class="completed" v-if="log.status === 200">{{ log.status }}</span>
+                                <span class="rejected" v-else>{{ log.status }}</span>
+                            </td>
+                            <td>{{ log.message }}</td>
+                            <td>{{ log.created_at }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="w-100 text-right">
