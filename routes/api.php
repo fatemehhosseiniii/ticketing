@@ -24,7 +24,6 @@ Route::prefix('dashboard')->middleware('auth:api')->group(function () {
     Route::resource('tickets', TicketController::class)->only('index', 'show', 'store', 'destroy');
     //management ticket
     Route::prefix('tickets/{ticket}')->group(function () {
-
         //reject
         Route::patch('/rejected', TicketRejectionController::class);
         //approval routes
