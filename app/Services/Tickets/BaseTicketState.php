@@ -4,6 +4,7 @@ namespace App\Services\Tickets;
 
 
 use App\Enums\TicketStatus;
+use App\Events\TicketStatusChanged;
 use App\Models\Ticket;
 
 abstract class BaseTicketState implements TicketState
@@ -26,5 +27,10 @@ abstract class BaseTicketState implements TicketState
             'status_message' => $reason,
             'checked_at' => now()
         ]);
+        event(new TicketStatusChanged(
+            $this->ticket,
+            $this->ticket->status->label(),
+            $status->label()
+        ));
     }
 }

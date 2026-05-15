@@ -130,6 +130,7 @@ const rejected = async (id) => {
     if (data && data.status === 'success') {
         fetchTickets(paginate.value.current_page)
         closeModal()
+        reject_description.value = ''
     }
 }
 const accepted = async (id) => {
