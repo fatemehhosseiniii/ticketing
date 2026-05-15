@@ -21,7 +21,7 @@ class Ticket extends Model
     {
         return [
             'status' => TicketStatus::class,
-            'checked_at'=>'timestamp'
+            'checked_at'=>'datetime'
         ];
     }
 

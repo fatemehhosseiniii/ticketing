@@ -117,7 +117,7 @@ const deleteTicket = async (id) => {
 
 /** Ticket State **/
 const rejected = async (id) => {
-    const data = await myFetch('/api/dashboard/tickets/' + id+'/rejected', true, 'PATCH', JSON.stringify({status_message:reject_description.value}),true)
+    const data = await myFetch('/api/dashboard/tickets/' + id + '/rejected', true, 'PATCH', JSON.stringify({status_message: reject_description.value}), true)
 
     if (!data.data && data.errors) {
         if (data.errors && typeof data.errors === 'object') {
@@ -133,7 +133,7 @@ const rejected = async (id) => {
     }
 }
 const accepted = async (id) => {
-    const data = await myFetch('/api/dashboard/tickets/' + id+'/accepted', true, 'PATCH')
+    const data = await myFetch('/api/dashboard/tickets/' + id + '/accepted', true, 'PATCH')
 
     if (data && data.status === 'success') {
         fetchTickets(paginate.value.current_page)
@@ -239,9 +239,10 @@ onMounted(() => {
                             🗑
                         </button>
 
-                        <button v-if="(ticket.status.key === 'new' && user.role.key === 'level_one') || (ticket.status.key === 'accepted' && user.role.key === 'level_two')"
-                                @click="accepted(ticket.code)"
-                                class="icon-btn success">
+                        <button
+                            v-if="(ticket.status.key === 'new' && user.role.key === 'level_one') || (ticket.status.key === 'accepted' && user.role.key === 'level_two')"
+                            @click="accepted(ticket.code)"
+                            class="icon-btn success">
                             ✔
                         </button>
                         <button
@@ -304,9 +305,9 @@ onMounted(() => {
                     <span class="badge" :class="selectedTicket.status.class">
                         {{ selectedTicket.status.label }}
                     </span>
-                    <small v-if="selectedTicket.checked_at">
-                        <b>Checked date:</b> {{ selectedTicket?.checked_at }}
-                    </small>
+                </p>
+                <p v-if="selectedTicket.checked_at"><b>Checked date: </b>
+                    {{ selectedTicket?.checked_at }}
                 </p>
                 <p v-if="selectedTicket.file_src">
                     <a :href="selectedTicket?.file_src" target="_blank">Download file</a>

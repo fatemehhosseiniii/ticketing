@@ -37,7 +37,7 @@ enum TicketStatus: int
             self::Accepted     => 'accepted',
             self::Send     => 'send',
             self::Rejected     => 'rejected',
-            self::Completed     => 'approved'
+            self::Completed     => 'completed'
         };
     }
 
