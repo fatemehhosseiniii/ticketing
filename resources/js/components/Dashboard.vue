@@ -21,6 +21,11 @@ const showRejectModal = ref(false)
 const rejectSelectedTicket = ref(null)
 const reject_description = ref('')
 
+const showNotificationModal = ref(false)
+const notifications = ref([])
+const notificationsPaginate = ref([])
+
+
 const errors = ref({})
 const loading = ref(false)
 
@@ -114,6 +119,18 @@ const deleteTicket = async (id) => {
     }
 }
 
+/** Notifications **/
+const openNotificationsModal = async (page=1) => {
+    const query = new URLSearchParams({
+        page: page
+    })
+    const data = await myFetch(`/api/dashboard/profile/notifications?${query.toString()}`, true)
+    if (data && data.status === 'success' && data.data && data.data.notifications) {
+        showNotificationModal.value = true
+        notifications.value=data.data.notifications
+        notificationsPaginate.value=data.data.links
+    }
+}
 
 /** Ticket State **/
 const rejected = async (id) => {
@@ -153,6 +170,17 @@ const prevPage = () => {
         fetchTickets(paginate.value.current_page - 1)
     }
 }
+const notificationPrevPage = () => {
+    if (notificationsPaginate.value.current_page > 1) {
+        openNotificationsModal(notificationsPaginate.value.current_page - 1)
+    }
+}
+
+const notificationNextPage = () => {
+    if (notificationsPaginate.value.current_page < notificationsPaginate.value.last_page) {
+        openNotificationsModal(notificationsPaginate.value.current_page + 1)
+    }
+}
 
 
 /** Modal Functions**/
@@ -168,6 +196,10 @@ const closeModal = () => {
 
     showRejectModal.value = false
     rejectSelectedTicket.value = null
+
+    showNotificationModal.value = false
+    notifications.value=[]
+    notificationsPaginate.value=[]
 }
 
 const openCreateModal = () => {
@@ -200,6 +232,7 @@ onMounted(() => {
         </div>
         <div class="text-right">
             <button @click="openCreateModal()" v-if="user.role.key === 'user'">Create new Ticket</button>
+            <button @click="openNotificationsModal()" v-if="user.role.key === 'user'" class="notic-button">Notifications</button>
             <button @click="logout()" class="close-button">Log out</button>
         </div>
         <div v-if="loading" class="loading">
@@ -343,6 +376,70 @@ onMounted(() => {
                         </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <div class="w-100 text-right">
+                    <button @click="closeModal" class="close-button">close</button>
+                </div>
+
+            </div>
+        </div>
+        <div v-if="showNotificationModal" class="modal-overlay" @click="closeModal">
+            <div class="modal-big" @click.stop>
+
+                <h3>Notifications</h3>
+
+                <div>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Ticket</th>
+                            <th>Detail</th>
+                            <th>Created date</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr v-for="notification in notifications">
+                            <td>{{ notification.type }}</td>
+                            <td># {{ notification.ticket_code ?? '- ' }}</td>
+                            <td>
+                                <span v-if="notification.old_status && notification.new_status">
+                                    <small>old Status: <strong>{{notification.old_status}}</strong></small><br/>
+                                    <small>new Status: <strong>{{notification.new_status}}</strong></small>
+                                </span>
+                                <span v-else> - </span>
+                            </td>
+                            <td>{{notification.created_at}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination" v-if="notificationsPaginate.last_page > 1">
+
+                        <!-- Prev -->
+                        <button
+                            @click="notificationPrevPage"
+                            :disabled="notificationsPaginate.current_page === 1"
+                        >
+                            «
+                        </button>
+
+                        <!-- Page Info -->
+                        <span>
+                    page {{ notificationsPaginate.current_page }}
+                    of {{ notificationsPaginate.last_page }}
+                </span>
+
+                        <!-- Next -->
+                        <button
+                            @click="notificationNextPage"
+                            :disabled="notificationsPaginate.current_page === notificationsPaginate.last_page"
+                        >
+                            »
+                        </button>
+
+                    </div>
                 </div>
 
                 <div class="w-100 text-right">

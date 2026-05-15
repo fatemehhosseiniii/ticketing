@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests\Api\Tickets;
 
+use App\Models\Ticket;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TicketApprovalRequest extends FormRequest
+class TicketRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can('create', Ticket::class);
     }
 
     /**
@@ -23,7 +24,9 @@ class TicketApprovalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'subject'=>['required','string','max:110'],
+            'description'=>['required','string','max:500'],
+            'file_src'=>['nullable','file','mimes:jpg,pdf,png','max:1024']
         ];
     }
 }

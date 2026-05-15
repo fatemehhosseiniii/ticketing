@@ -21,6 +21,7 @@ abstract class BaseTicketState implements TicketState
 
     protected function change(TicketStatus $status, string|null $reason = null): void
     {
+        $ticketStatus=$this->ticket->status->label();
         $this->ticket->update([
             'status' => $status,
             'expert_id' => auth()->id(),
@@ -29,7 +30,7 @@ abstract class BaseTicketState implements TicketState
         ]);
         event(new TicketStatusChanged(
             $this->ticket,
-            $this->ticket->status->label(),
+            $ticketStatus,
             $status->label()
         ));
     }

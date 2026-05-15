@@ -58,7 +58,7 @@ class TicketStatusChangedNotification extends Notification implements ShouldQueu
     {
         return [
             'ticket_code' => $this->ticket->code,
-            'ticket_title' => $this->ticket->title,
+            'ticket_subject' => $this->ticket->subject,
             'old_status' => $this->oldStatus,
             'new_status' => $this->newStatus,
         ];
