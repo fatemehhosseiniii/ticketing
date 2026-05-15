@@ -13,6 +13,7 @@ class RegisterController extends Controller
     public function __invoke(RegisterRequest $request)
     {
         $user = User::create($request->validated());
+        $user->refresh();
 
         //make token
         $token = $user->createToken('auth_token')->plainTextToken;
